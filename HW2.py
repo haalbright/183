@@ -1,4 +1,5 @@
 import pandas as pd
+import seaborn as sb
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -21,36 +22,43 @@ def corrMatrix(df,target): #step 3
     print(dfCorr[target].loc[dfCorr[target]>.5])
     return dfCorr
 
-def corrGraphs(df): #scatter and line
-    for label in df.columns:
+def plotGraphs(df, target): #scatter and line
+    for label in df.drop(target, axis=1).columns:
         if df[label].dtype in ['int64', 'float64']:
-            df.plot(kind='scatter', x=)
-            plt.show()
+            df.plot.scatter(y=target, x=label)
+            name = "/Users/hannaalbright1/Desktop/CSCI 183/"+target+"/"+label + "graph.png"
+            plt.savefig(name)
+            plt.close()
         elif df[label].dtype == 'object':
-            replaceWith = "UNKNOWN"
-        newColumn = df[label].replace(to_replace=None, value=replaceWith)
-        df.assign(label=newColumn)
-
-def fillnan(df):
-    for label in df.columns:
-        if df[label].hasnans:
-            print(label)
-            print(df[label].dtype)
-            if df[label].dtype in ['int64','float64']:
-                replaceWith=df[label].mean()
-                print("mean", replaceWith)
-            elif df[label].dtype=='object':
-                 replaceWith="UNKNOWN"
-            newColumn=df[label].replace(to_replace=None, value=replaceWith)
-            df.assign(label=newColumn)
-    return df
+            sb.violinplot(x=df[label], y=df[target])
+            name="/Users/hannaalbright1/Desktop/CSCI 183/"+target+"/"+label+"graph.png"
+            plt.savefig(name)
+            plt.close()
+#
+# def fillnan(df):
+#     for label in df.columns:
+#         if df[label].hasnans:
+#             print(label)
+#             print(df[label].dtype)
+#             if df[label].dtype in ['int64','float64']:
+#                 replaceWith=df[label].mean()
+#                 print("mean", replaceWith)
+#             elif df[label].dtype=='object':
+#                  replaceWith="UNKNOWN"
+#             newColumn=df[label].replace(to_replace=None, value=replaceWith)
+#             df.assign(label=newColumn)
+#     return df
 
 housing=readCSV("/Users/hannaalbright1/Desktop/CSCI 183/housing.csv")
 houseData=readCSV("/Users/hannaalbright1/Desktop/CSCI 183/kc_house_data.csv")
-#housing=fillnan(housing)
-#print("i")
-houseCorr=corrMatrix(housing, "median_house_value")
-corrGraphs(houseCorr)
+plotGraphs(houseData,"price")
+plotGraphs(housing,"median_house_value")
+
+# houseCorr=corrMatrix(housing, "median_house_value")
+# houseDataCorr=corrMatrix(houseData, "price")
+# houseCorr.to_csv("/Users/hannaalbright1/Desktop/CSCI 183/correlationHousing.csv")
+# houseDataCorr.to_csv("/Users/hannaalbright1/Desktop/CSCI 183/correlationKC_house_data.csv")
+# corrGraphs(houseCorr)
 
 
 # 3. Find the correlation matrix for this dataset. Report which features tend to have a
